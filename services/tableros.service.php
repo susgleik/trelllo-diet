@@ -2,15 +2,24 @@
 
 class TablerosService {
 
-	public function crearTablero() {
+	public function crearTablero($nombre) {
+		return Tablero::crearTablero($nombre);
+	}
 
-		$json = array(
-			"statusCode" => "200",
-			"detalle" => "ESTAS EN TABLEROS con el metodo GET"
-		);
-	
-		echo json_encode($json, http_response_code($json["statusCode"]) );
+	public function obtenerTableros() {
+		return Tablero::obtenerTableros();
+	}
 
+	public function actualizarTablero($tablero){
+		return Tablero::actualizarTablero($tablero);
+	}
+
+	public function eliminarTablero($id) {
+		return Tablero::eliminarTablero($id);
+	}
+
+	public function obtenerTablero($id){
+		return Tablero::obtenerTablero($id);
 	}
 
 }

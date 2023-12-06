@@ -19,27 +19,25 @@ switch ($rutas[2]) {
 			METODOS HTTP
 			********/
 			switch ($_SERVER["REQUEST_METHOD"]) {
-				case "PUT":
-					$json = array(
-						"statusCode" => "200",
-						"detalle" => "ESTAS EN EL TABLERO " . $rutas[3] . "con el metodo PUT"
-					);
-				
-					echo json_encode($json, http_response_code($json["statusCode"]) );
-					return;
+				case "DELETE":
+					$service = new TablerosService();
+					$service->eliminarTablero($rutas[3]);
 
-				case "DELETE": 
 					$json = array(
-						"statusCode" => "401",
-						"detalle" => "ESTAS EN EL TABLERO " . $rutas[3] . "con el metodo DELETE"
+						"statusCode" => "204",
+						"detalle" => "Tablero eliminado"
 					);
 				
 					echo json_encode($json, http_response_code($json["statusCode"]) );
+
 					return;
-				case "GET": 
+				case "GET":
+					$service = new TablerosService();
+					$tablero = $service->obtenerTablero( $rutas[3] );
+
 					$json = array(
 						"statusCode" => "200",
-						"detalle" => "ESTAS EN EL TABLERO " . $rutas[3] . "con el metodo GET"
+						"detalle" => $tablero
 					);
 				
 					echo json_encode($json, http_response_code($json["statusCode"]) );
@@ -65,33 +63,46 @@ switch ($rutas[2]) {
 		********/
 		switch ($_SERVER["REQUEST_METHOD"]) {
 			case "POST":
+
+				$tablero = $_POST["nombre"];
+				$service = new TablerosService();
+				$tablero = $service->crearTablero($tablero);
+
 				$json = array(
 					"statusCode" => "201",
-					"detalle" => "ESTAS EN TABLEROS con el metodo POST"
+					"detalle" => $tablero
 				);
 			
 				echo json_encode($json, http_response_code($json["statusCode"]) );
 				return;
 
 			case "GET":
+				$service = new TablerosService();
+				$tableros = $service->obtenerTableros();
 
-				$tableros = new TablerosService();
-				$tableros->crearTablero();
-				return;
-
-			case "PUT":
 				$json = array(
 					"statusCode" => "200",
-					"detalle" => "ESTAS EN TABLEROS con el metodo PUT"
+					"detalle" => $tableros
 				);
 			
 				echo json_encode($json, http_response_code($json["statusCode"]) );
 				return;
 
-			case "DELETE":
+			case "PUT":
+				$datos = file_get_contents("php://input");
+				$datos = json_decode($datos, true);
+				$tablero = array(
+					"id_tablero"=> $datos["id_tablero"],
+					"nombre"=> $datos["nombre"]
+				);
+
+				$service = new TablerosService();
+				$tableros = $service->actualizarTablero($tablero);
+
+
 				$json = array(
-					"statusCode" => "401",
-					"detalle" => "ESTAS EN TABLEROS con el metodo DELETE"
+					"statusCode" => "200",
+					"detalle" => $tableros
 				);
 			
 				echo json_encode($json, http_response_code($json["statusCode"]) );
@@ -117,6 +128,20 @@ switch ($rutas[2]) {
 	
 		echo json_encode($json, http_response_code($json["statusCode"]) );
 		return;
+
+	/*********
+	AUTH
+	********/
+	case "auth":
+		switch( $rutas[3] ) {
+			case "registro":
+				
+				return;
+			case "acceder":
+				return;
+			default:
+			    return;
+		}
 
 	default: 
 		$json = array(
